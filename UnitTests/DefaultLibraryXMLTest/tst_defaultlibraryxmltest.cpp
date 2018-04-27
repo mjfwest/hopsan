@@ -34,11 +34,11 @@
 
 #define DEFAULTLIBPATH "../componentLibraries/defaultLibrary"
 
-#ifndef BUILTINDEFAULTCOMPONENTLIB
+#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
     #ifdef _WIN32
-        #define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/defaultComponentLibrary" TO_STR(DEBUG_EXT) ".dll"
+        #define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/defaultcomponentlibrary" TO_STR(DEBUG_EXT) ".dll"
     #else
-        #define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/libdefaultComponentLibrary" TO_STR(DEBUG_EXT) ".so"
+        #define DEFAULTCOMPONENTLIB DEFAULTLIBPATH "/libdefaultcomponentlibrary" TO_STR(DEBUG_EXT) ".so"
     #endif
 #endif
 
@@ -135,7 +135,7 @@ void DefaultLibraryXMLTest::initTestCase()
     QVERIFY2(libRoot.exists(), QString("Libroot: %1 could not be found!").arg(DEFAULTLIBPATH).toStdString().c_str());
     recurseCollectXMLFiles(libRoot);
 
-#ifndef BUILTINDEFAULTCOMPONENTLIB
+#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
     bool loadOK = mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
     QVERIFY2(loadOK, "could not load the component library");
 #endif

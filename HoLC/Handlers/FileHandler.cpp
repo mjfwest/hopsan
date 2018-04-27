@@ -84,9 +84,9 @@ void FileHandler::generateXmlAndSourceFiles(QString path)
     }
 
     QFile xmlFile(path+"/"+mLibName+".xml");
-    QFile sourceFile(path+"/"+mLibName+".cc");
+    QFile sourceFile(path+"/"+mLibName+".cpp");
     QFile xmlTemplateFile(":Templates/xmlTemplate.xml");
-    QFile sourceTemplateFile(":Templates/sourceTemplate.cc");
+    QFile sourceTemplateFile(":Templates/sourceTemplate.cpp");
 
     if(!xmlFile.open(QFile::WriteOnly | QFile::Text))
     {
@@ -590,10 +590,11 @@ void FileHandler::compileLibrary()
     target.prepend("lib");
 #endif
 
+    QString compilerPath;
 #ifdef __linux__
-    QString compilerPath = mpConfiguration->getCompilerPath()+"/gcc";
+    compilerPath = mpConfiguration->getCompilerPath()+"/gcc";
 #elif _WIN32
-    QString compilerPath = mpConfiguration->getCompilerPath()+"/g++.exe";
+    compilerPath = mpConfiguration->getCompilerPath()+"/g++.exe";
 #endif
 
     bool success;

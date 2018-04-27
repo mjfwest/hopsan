@@ -26,16 +26,15 @@
 #include "HopsanEssentials.h"
 #include "HopsanCoreMacros.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
-#include "CoreUtilities/GeneratorHandler.h"
 #include "CoreUtilities/HmfLoader.h"
 #include <assert.h>
 
-#ifndef BUILTINDEFAULTCOMPONENTLIB
+#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
 #ifdef _WIN32
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultComponentLibrary" TO_STR(DEBUG_EXT) ".dll"
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/defaultcomponentlibrary" TO_STR(DEBUG_EXT) ".dll"
 #define LIBEXT ".dll"
 #else
-#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultComponentLibrary" TO_STR(DEBUG_EXT) ".so"
+#define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/libdefaultcomponentlibrary" TO_STR(DEBUG_EXT) ".so"
 #define LIBEXT ".so"
 #endif
 #endif
@@ -56,7 +55,7 @@ class SimulationTests : public QObject
 public:
     SimulationTests()
     {
-#ifndef BUILTINDEFAULTCOMPONENTLIB
+#ifndef HOPSAN_INTERNALDEFAULTCOMPONENTS
         mHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
 #endif
         const char* xmlStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"

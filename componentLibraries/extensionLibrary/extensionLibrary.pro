@@ -5,7 +5,7 @@ TEMPLATE = lib
 
 # TARGET is the name of the compiled lib, (.dll or .so will be added automatically)
 # Change this to the name of YOUR lib
-TARGET = extensionLibrary
+TARGET = extensionlibrary
 
 # Destination for the compiled dll. $${PWD}/ means the same directory as this .pro file, even if you use shadow build
 DESTDIR = $${PWD}/
@@ -25,7 +25,7 @@ include($${PWD}/../exampleComponentLib/hopsanDebugReleaseCompile.pri)
 # -------------------------------------------------
 # Project files
 # -------------------------------------------------
-SOURCES += extensionLibrary.cc
+SOURCES += extensionLibrary.cpp
 
 include(Components.pri)
 

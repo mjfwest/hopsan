@@ -6,7 +6,7 @@
 # -------------------------------------------------
 include( ../Common.prf )
 
-TARGET = HopsanGUI
+TARGET = hopsangui
 TEMPLATE = app
 DESTDIR = $${PWD}/../bin
 
@@ -74,19 +74,28 @@ have_zeromq() {
 #--------------------------------------------------------
 # Set HopsanCore Paths
 INCLUDEPATH *= $${PWD}/../HopsanCore/include/
-LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lhopsancore$${DEBUG_EXT}
+DEFINES *= HOPSANCORE_DLLIMPORT
+#--------------------------------------------------------
+
+#--------------------------------------------------------
+# Set hopsangeneratorgui Paths
+INCLUDEPATH *= $${PWD}/../hopsangeneratorgui/include
+LIBS *= -L$${PWD}/../bin -lhopsangeneratorgui$${DEBUG_EXT}
 #--------------------------------------------------------
 
 #--------------------------------------------------------
 # Set SymHop Paths
 INCLUDEPATH *= $${PWD}/../SymHop/include/
-LIBS *= -L$${PWD}/../bin -lSymHop$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lsymhop$${DEBUG_EXT}
+DEFINES *= SYMHOP_DLLIMPORT
 #--------------------------------------------------------
 
 #--------------------------------------------------------
 # Set Ops Paths
 INCLUDEPATH *= $${PWD}/../Ops/include/
-LIBS *= -L$${PWD}/../bin -lOps$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lops$${DEBUG_EXT}
+DEFINES *= OPS_DLLIMPORT
 #--------------------------------------------------------
 
 #--------------------------------------------------------
@@ -157,8 +166,6 @@ unix {
     }
 }
 win32 {
-    #DEFINES += STATICCORE
-
     # Set Python paths
     contains(DEFINES, USEPYTHONQT) {
         !build_pass:message("Looking for Python include and lib paths since USEPYTHONQT is defined")
@@ -198,7 +205,7 @@ macx {
 #message(GUI Libs is $${LIBS})
 #message(GUI QMAKE_POST_LINK $$QMAKE_POST_LINK)
 
-RESOURCES += \  
+RESOURCES += \
     Resources.qrc
 
 # Release compile only, will add the application icon
@@ -291,7 +298,8 @@ SOURCES += main.cpp \
     Widgets/TimeOffsetWidget.cpp \
     Dialogs/NumHopScriptDialog.cpp \
     PlotCurveStyle.cpp \
-    Utilities/WebviewWrapper.cpp
+    Utilities/WebviewWrapper.cpp \
+    GeneratorUtils.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -382,7 +390,8 @@ HEADERS += MainWindow.h \
     Widgets/TimeOffsetWidget.h \
     Dialogs/NumHopScriptDialog.h \
     PlotCurveStyle.h \
-    Utilities/WebviewWrapper.h
+    Utilities/WebviewWrapper.h \
+    GeneratorUtils.h
 
     contains(DEFINES, USEPYTHONQT) {
         SOURCES += Widgets/PyDockWidget.cpp

@@ -3,7 +3,7 @@
 # -------------------------------------------------
 include( ../Common.prf )
 
-TARGET = SymHop
+TARGET = symhop
 TEMPLATE = lib
 CONFIG += shared
 DESTDIR = $${PWD}/../bin
@@ -41,7 +41,7 @@ CONFIG(release, debug|release) {
 # Platform specific additional project options
 # -------------------------------------------------
 win32 {
-    DEFINES += SYMHOPDLLEXPORT
+    DEFINES += SYMHOP_DLLEXPORT
     DEFINES -= UNICODE
 }
 
@@ -49,16 +49,7 @@ win32 {
 # Project files
 # -------------------------------------------------
 
-SOURCES += src/SymHop.cc
+SOURCES += src/SymHop.cpp
 
 HEADERS += include/SymHop.h \
-    include/win32dll.h
-
-
-
-
-
-
-
-
-
+    include/symhop_win32dll.h

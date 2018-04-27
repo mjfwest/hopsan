@@ -5,7 +5,7 @@ TEMPLATE = lib
 
 # TARGET is the name of the compiled lib, (.dll or .so will be added automatically)
 # Change this to the name of YOUR lib
-TARGET = exampleComponentLib
+TARGET = examplecomponentlib
 
 # Destination for the compiled dll. $${PWD}/ means the same directory as this .pro file, even if you use shadow build
 DESTDIR = $${PWD}/
@@ -44,7 +44,7 @@ DEFINES *= _USE_MATH_DEFINES
 # Project files
 # -------------------------------------------------
 SOURCES += \
-    exampleComponentLib.cc
+    exampleComponentLib.cpp
 
 HEADERS += \
     HydraulicComponents/MyExampleVolume.hpp \

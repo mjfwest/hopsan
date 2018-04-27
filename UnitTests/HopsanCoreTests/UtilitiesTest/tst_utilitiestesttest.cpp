@@ -55,7 +55,7 @@ private Q_SLOTS:
         QFETCH(QString, version2);
         QFETCH(bool, ans);
         bool test = isVersionAGreaterThanB(version1.toStdString().c_str(), version2.toStdString().c_str());
-        QVERIFY2(isVersionAGreaterThanB(version1.toStdString().c_str(), version2.toStdString().c_str()) == ans, "Version check returned wrong answer.");
+        QVERIFY2(test == ans, "Version check returned wrong answer.");
     }
 
     void Version_Check_data()
@@ -205,7 +205,7 @@ private Q_SLOTS:
     {
         QFETCH(int,desired);
 
-        QVERIFY2(determineActualNumberOfThreads(size_t(desired)) == (size_t)min(desired, QThread::idealThreadCount()), "determineActualNumberOfThreads() returned wrong value!");
+        QVERIFY2(determineActualNumberOfThreads(size_t(desired)) == (size_t)std::min(desired, QThread::idealThreadCount()), "determineActualNumberOfThreads() returned wrong value!");
     }
 
     void Determine_Actual_Number_Of_Threads_data()

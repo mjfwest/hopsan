@@ -3,7 +3,7 @@
 # -------------------------------------------------
 include( ../Common.prf )
 
-TARGET = HopsanCore
+TARGET = hopsancore
 TEMPLATE = lib
 CONFIG += shared
 DESTDIR = $${PWD}/../bin
@@ -33,9 +33,9 @@ INCLUDEPATH *= $${PWD}/dependencies/IndexingCSVParser
 #--------------------------------------------------------
 # Set numHop paths, (compile in)
 INCLUDEPATH *= $${PWD}/dependencies/libNumHop/include
-SOURCES += $${PWD}/dependencies/libNumHop/src/Expression.cc
-SOURCES += $${PWD}/dependencies/libNumHop/src/Helpfunctions.cc
-SOURCES += $${PWD}/dependencies/libNumHop/src/VariableStorage.cc
+SOURCES += $${PWD}/dependencies/libNumHop/src/Expression.cpp
+SOURCES += $${PWD}/dependencies/libNumHop/src/Helpfunctions.cpp
+SOURCES += $${PWD}/dependencies/libNumHop/src/VariableStorage.cpp
 HEADERS += $${PWD}/dependencies/libNumHop/include/numhop.h
 #--------------------------------------------------------
 
@@ -54,18 +54,19 @@ lessThan(QT_MAJOR_VERSION, 5){
 DEFINES *= _USE_MATH_DEFINES
 
 # Turn on the Hopsan Core runtime log file
-DEFINES *= WRITEHOPSANCORELOG
+DEFINES *= HOPSANCORE_WRITELOG
 
-# Turn on multi-threading
-DEFINES *= MULTITHREADING
+# Turn off multi-threading
+# DEFINES *= HOPSANCORE_NOMULTITHREADING
 
 
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
 win32 {
-    #DEFINES += STATICCORE      #Use this if you are compiling the core into a program directly or building a static lib
-    DEFINES += DOCOREDLLEXPORT  #Use this if you are compiling the core as a DLL or SO
+    # Turn on symbol export when building a  DLL
+    DEFINES += HOPSANCORE_DLLEXPORT
+    # Disable unicode strings (use ascii)
     DEFINES -= UNICODE
 
     # Enable auto-import
@@ -80,7 +81,7 @@ win32 {
         system($${PWD}/../writeGitVersionHeader.bat $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
     }
 }
-unix { 
+unix {
     LIBS += -ldl
 
     # Add runtime search path so that dynamically loaded libraries in the same directory can be found.
@@ -96,7 +97,7 @@ unix {
         system($${PWD}/../writeGitVersionHeader.sh $${PWD}/include/HopsanCoreGitVersion.h HOPSANCORE $${commithash} $${commitdatetime})
     }
 }
-macx { 
+macx {
     INCLUDEPATH += /opt/local/include/
     QMAKE_LIBDIR += /opt/local/lib/
 }
@@ -112,43 +113,42 @@ macx {
 # -------------------------------------------------
 SOURCES += \
     #DO NOT remove the commented line below, it will be autoreplaced by script
-    #INTERNALCOMPLIB.CC#
-    src/Port.cc \
-    src/Nodes.cc \
-    src/Node.cc \
-    src/HopsanEssentials.cc \
-    src/ComponentSystem.cc \
-    src/Component.cc \
-    src/CoreUtilities/LoadExternal.cc \
-    src/CoreUtilities/HopsanCoreMessageHandler.cc \
-    src/CoreUtilities/HmfLoader.cc \
-    src/ComponentUtilities/WhiteGaussianNoise.cc \
-    src/ComponentUtilities/SecondOrderTransferFunction.cc \
-    src/ComponentUtilities/matrix.cc \
-    src/ComponentUtilities/ludcmp.cc \
-    src/ComponentUtilities/IntegratorLimited.cc \
-    src/ComponentUtilities/FirstOrderTransferFunction.cc \
-    src/ComponentUtilities/CSVParser.cc \
-    src/Parameters.cc \
-    src/ComponentUtilities/AuxiliarySimulationFunctions.cc \
-    src/ComponentUtilities/DoubleIntegratorWithDamping.cc \
-    src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc \
-    src/ComponentUtilities/EquationSystemSolver.cc \
-    src/HopsanTypes.cc \
-    src/ComponentUtilities/HopsanPowerUser.cc \
-    src/ComponentUtilities/LookupTable.cc \
-    src/ComponentUtilities/PLOParser.cc \
+    #INTERNALCOMPLIB.CPP#
+    src/Port.cpp \
+    src/Nodes.cpp \
+    src/Node.cpp \
+    src/HopsanEssentials.cpp \
+    src/ComponentSystem.cpp \
+    src/Component.cpp \
+    src/CoreUtilities/LoadExternal.cpp \
+    src/CoreUtilities/HopsanCoreMessageHandler.cpp \
+    src/CoreUtilities/HmfLoader.cpp \
+    src/ComponentUtilities/WhiteGaussianNoise.cpp \
+    src/ComponentUtilities/SecondOrderTransferFunction.cpp \
+    src/ComponentUtilities/matrix.cpp \
+    src/ComponentUtilities/ludcmp.cpp \
+    src/ComponentUtilities/IntegratorLimited.cpp \
+    src/ComponentUtilities/FirstOrderTransferFunction.cpp \
+    src/ComponentUtilities/CSVParser.cpp \
+    src/Parameters.cpp \
+    src/ComponentUtilities/AuxiliarySimulationFunctions.cpp \
+    src/ComponentUtilities/DoubleIntegratorWithDamping.cpp \
+    src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cpp \
+    src/ComponentUtilities/EquationSystemSolver.cpp \
+    src/HopsanTypes.cpp \
+    src/ComponentUtilities/HopsanPowerUser.cpp \
+    src/ComponentUtilities/LookupTable.cpp \
+    src/ComponentUtilities/PLOParser.cpp \
     $${PWD}/dependencies/IndexingCSVParser/IndexingCSVParser.cpp \
-    src/Quantities.cc \
-    src/CoreUtilities/NumHopHelper.cc \
-    src/CoreUtilities/AliasHandler.cc \
-    src/CoreUtilities/ConnectionAssistant.cc \
-    src/CoreUtilities/SimulationHandler.cc \
-    src/CoreUtilities/CoSimulationUtilities.cc \
-    src/CoreUtilities/GeneratorHandler.cc \
-    src/CoreUtilities/MultiThreadingUtilities.cc \
-    src/CoreUtilities/StringUtilities.cc \
-    src/CoreUtilities/SaveRestoreSimulationPoint.cc
+    src/Quantities.cpp \
+    src/CoreUtilities/NumHopHelper.cpp \
+    src/CoreUtilities/AliasHandler.cpp \
+    src/CoreUtilities/ConnectionAssistant.cpp \
+    src/CoreUtilities/SimulationHandler.cpp \
+    src/CoreUtilities/CoSimulationUtilities.cpp \
+    src/CoreUtilities/MultiThreadingUtilities.cpp \
+    src/CoreUtilities/StringUtilities.cpp \
+    src/CoreUtilities/SaveRestoreSimulationPoint.cpp
 HEADERS += \
     include/win32dll.h \
     include/Port.h \
@@ -185,7 +185,6 @@ HEADERS += \
     include/Components/DummyComponent.hpp \
     include/ComponentUtilities/EquationSystemSolver.h \
     $${PWD}/dependencies/rapidxml/hopsan_rapidxml.hpp \
-    include/CoreUtilities/GeneratorHandler.h \
     include/CoreUtilities/MultiThreadingUtilities.h \
     include/CoreUtilities/CoSimulationUtilities.h \
     include/CoreUtilities/StringUtilities.h \

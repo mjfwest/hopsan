@@ -3,7 +3,7 @@
 # -------------------------------------------------
 include( ../Common.prf )
 
-TARGET = HopsanGenerator
+TARGET = hopsangenerator
 TEMPLATE = lib
 CONFIG += shared
 DESTDIR = $${PWD}/../bin
@@ -11,17 +11,6 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 
 QT -= gui
 QT += core xml
-
-# Keep these QtGui related options by them self so that external scrip may deactivate them when needed
-useqtgui=True
-contains( useqtgui, True ) {
-    DEFINES += USEQTGUI
-    QT += gui
-    isEqual(QT_MAJOR_VERSION, 5){
-        QT += widgets
-    }
-    message(Using Qt GUI components in HopsanGenerator)
-}
 
 # Enable C++11
 lessThan(QT_MAJOR_VERSION, 5){
@@ -54,13 +43,14 @@ INCLUDEPATH *= $${PWD}/include/
 #--------------------------------------------------
 # Add the include path to (HopsanCore)
 INCLUDEPATH *= $${PWD}/../HopsanCore/include/
-LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lhopsancore$${DEBUG_EXT}
 #--------------------------------------------------
 
 #--------------------------------------------------
 # Add the include path to (SymHop)
 INCLUDEPATH *= $${PWD}/../SymHop/include/
-LIBS *= -L$${PWD}/../bin -lSymHop$${DEBUG_EXT}
+LIBS *= -L$${PWD}/../bin -lsymhop$${DEBUG_EXT}
+DEFINES *= SYMHOP_DLLIMPORT
 #--------------------------------------------------
 
 # -------------------------------------------------
@@ -77,8 +67,7 @@ CONFIG(release, debug|release) {
 # Platform specific additional project options
 # -------------------------------------------------
 win32 {
-    #DEFINES += STATICCORE      #Use this if you are compiling the generator into a program directly or building a static lib
-    DEFINES += DOCOREDLLEXPORT  #Use this if you are compiling the generator as a DLL or SO
+    DEFINES += HOPSANGENERATOR_DLLEXPORT
     DEFINES -= UNICODE
 }
 unix {
@@ -91,22 +80,25 @@ unix {
 # Project files
 # -------------------------------------------------
 SOURCES += \
-    src/HopsanGeneratorLib.cc \
-    src/GeneratorUtilities.cc \
-    src/generators/HopsanGenerator.cc \
-    src/generators/HopsanSimulinkGenerator.cc \
-    src/generators/HopsanModelicaGenerator.cc \
-    src/generators/HopsanFMIGenerator.cc \
-    src/generators/HopsanLabViewGenerator.cc
+    src/HopsanGeneratorLib.cpp \
+    src/GeneratorUtilities.cpp \
+    src/generators/HopsanSimulinkGenerator.cpp \
+    src/generators/HopsanModelicaGenerator.cpp \
+    src/generators/HopsanFMIGenerator.cpp \
+    src/generators/HopsanLabViewGenerator.cpp \
+    src/GeneratorTypes.cpp \
+    src/generators/HopsanGeneratorBase.cpp
 
 HEADERS += \
-    include/win32dll.h \
+    include/hopsangenerator_win32dll.h \
     include/GeneratorUtilities.h \
-    include/generators/HopsanGenerator.h \
     include/generators/HopsanModelicaGenerator.h \
     include/generators/HopsanSimulinkGenerator.h \
     include/generators/HopsanFMIGenerator.h \
-    include/generators/HopsanLabViewGenerator.h
+    include/generators/HopsanLabViewGenerator.h \
+    include/GeneratorTypes.h \
+    include/generators/HopsanGeneratorBase.h \
+    include/hopsangenerator.h
 
 RESOURCES += \
     templates.qrc

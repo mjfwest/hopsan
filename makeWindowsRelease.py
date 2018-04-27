@@ -40,16 +40,17 @@ msvc2010DirList = [r'C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin', r'C:\Pro
 
 # Runtime binaries to copy to bin directory (Note! Path to qt/bin and mingw/bin and plugin directories is set by external script)
 # Note! This list must be adapted to the actual version of Qt/MinGW that you are using when building the release
-qtRuntimeBins = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll', 'Qt5Sensors.dll', 'Qt5Positioning.dll', 'Qt5Qml.dll', 'Qt5Quick.dll',
-                 'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll', 'Qt5WebChannel.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
+qtRuntimeBins = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll',
+                 'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll',
                  'Qt5Test.dll', 'icuin56.dll', 'icuuc56.dll', 'icudt56.dll', 'Qt5PrintSupport.dll', 'libeay32.dll', 'ssleay32.dll']
 qtRuntimeBins32 = ['Qt5Core.dll', 'Qt5Gui.dll', 'Qt5Network.dll', 'Qt5OpenGL.dll', 'Qt5Widgets.dll', 'Qt5Sensors.dll', 'Qt5Positioning.dll', 'Qt5Qml.dll', 'Qt5Quick.dll',
-                 'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5WebKit.dll', 'Qt5Xml.dll', 'Qt5WebKitWidgets.dll', 'Qt5WebChannel.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
-                 'Qt5Test.dll', 'icuin53.dll', 'icuuc53.dll', 'icudt53.dll', 'Qt5PrintSupport.dll', 'libeay32.dll', 'ssleay32.dll']
+                 'Qt5Sql.dll', 'Qt5Svg.dll', 'Qt5Xml.dll', 'Qt5WebChannel.dll', 'Qt5Multimedia.dll', 'Qt5MultimediaWidgets.dll',
+                 'Qt5Test.dll', 'Qt5PrintSupport.dll']
 qtPluginBins  = [r'iconengines/qsvgicon.dll', r'imageformats/qjpeg.dll', r'imageformats/qsvg.dll', r'platforms/qwindows.dll']
 mingwBins     = ['libgcc_s_seh-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']
 mingwBins32   = ['libgcc_s_dw2-1.dll', 'libstdc++-6.dll', 'libwinpthread-1.dll']
 mingwOptBins  = []
+mingwOptBins32  = ['libeay32.dll', 'ssleay32.dll']
 
 dependencyFiles = ['qwt/lib/qwt.dll', 'zeromq/bin/libzmq.dll', 'hdf5/bin/hdf5_cpp-shared.dll', 'hdf5/bin/hdf5-shared.dll', 'FMILibrary/lib/libfmilib_shared.dll',
                    'discount/lib/libmarkdown.dll']
@@ -426,6 +427,15 @@ def copyFileToDir(srcDir, srcFile, dstDir, keep_relative_path=True):
         print('Error: Source file '+src+' does not exist!')
 
 
+def checkFilesExistInDir(root_dir, list_of_files):
+    did_find_all = True;
+    for f in list_of_files:
+        file_path = os.path.join(root_dir, f)
+        if not fileExists(file_path):
+            printError(file_path+' does not exist!')
+            did_find_all = False
+    return did_find_all
+
 #  Copy srcDir into dstDir, creating dstDir if necessary
 def copyDirTo(srcDir, dstDir):
     srcDir = os.path.normpath(srcDir)
@@ -436,13 +446,13 @@ def copyDirTo(srcDir, dstDir):
             os.makedirs(dstDir)
         tgtDir = os.path.join(dstDir, lastpathelement(srcDir))
         if os.path.exists(tgtDir):
-            print('Error: tgtDir '+tgtDir+' already exists')
+            printError('tgtDir '+tgtDir+' already exists')
             return False
         print('Copying: '+srcDir+' to: '+tgtDir)
         shutil.copytree(srcDir, tgtDir)
         return True
     else:
-        print('Error: Src directory '+srcDir+' does not exist!')
+        printError('Src directory '+srcDir+' does not exist!')
         return False
 
 def move(src, dst):
@@ -544,7 +554,7 @@ def msvcCompile(msvcVersion, architecture, msvcpath):
         return False
     
     # Remove previous files
-    callDel(hopsanDir+r'\bin\HopsanCore*.*')
+    callDel(hopsanDir+r'\bin\hopsancore*.*')
 
     # Create clean build directory
     hopsanBuildDir = hopsanDir+r'\HopsanCore_bd'
@@ -580,7 +590,7 @@ def msvcCompile(msvcVersion, architecture, msvcpath):
     callRd(hopsanBuildDir)
 
     hopsanDirBin = hopsanDir+r'\bin'
-    if not fileExists(hopsanDirBin+r'\HopsanCore.dll'):
+    if not fileExists(hopsanDirBin+r'\hopsancore.dll'):
         printError("Failed to build HopsanCore with Visual Studio "+msvcVersion+" "+architecture)
         return False
 
@@ -588,9 +598,9 @@ def msvcCompile(msvcVersion, architecture, msvcpath):
     targetDir = hopsanDirBin+"\\"+makeMSVCOutDirName(msvcVersion, architecture)
     callRd(targetDir)
     mkdirs(targetDir)
-    move(hopsanDirBin+r'\HopsanCore.dll', targetDir)
-    move(hopsanDirBin+r'\HopsanCore.lib', targetDir)
-    move(hopsanDirBin+r'\HopsanCore.exp', targetDir)
+    move(hopsanDirBin+r'\hopsancore.dll', targetDir)
+    move(hopsanDirBin+r'\hopsancore.lib', targetDir)
+    move(hopsanDirBin+r'\hopsancore.exp', targetDir)
     
     return True
 
@@ -607,9 +617,9 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     fullversion = versionnumber+'.'+revisionnumber
     if not dodevrelease:
         # Set version numbers (by changing .h files)
-        replace_pattern('HopsanCore/include/HopsanCoreVersion.h', r'#define HOPSANCOREVERSION.*', r'#define HOPSANCOREVERSION "{}"'.format(fullversion))
-        replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANGUIVERSION.*', r'#define HOPSANGUIVERSION "{}"'.format(fullversion))
-        replace_pattern(r'HopsanCLI/version_cli.h', r'#define HOPSANCLIVERSION.*', r'#define HOPSANCLIVERSION "{}"'.format(fullversion))
+        replace_pattern('HopsanCore/include/HopsanCoreVersion.h', r'#define HOPSANCOREVERSION .*', r'#define HOPSANCOREVERSION "{}"'.format(fullversion))
+        replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANGUIVERSION .*', r'#define HOPSANGUIVERSION "{}"'.format(fullversion))
+        replace_pattern(r'HopsanCLI/version_cli.h', r'#define HOPSANCLIVERSION .*', r'#define HOPSANCLIVERSION "{}"'.format(fullversion))
 
         # Hide splash screen development warning
         replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'Development version', '')
@@ -618,7 +628,7 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
         replace_pattern(r'HopsanGUI/HopsanGUI.pro', r'.*?DEFINES \*= DEVELOPMENT', r'#DEFINES *= DEVELOPMENT')
 
     # Set the release version definition
-    replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANRELEASEVERSION.*', r'#define HOPSANRELEASEVERSION "{}"'.format(fullversion))
+    replace_pattern(r'HopsanGUI/version_gui.h', r'#define HOPSANRELEASEVERSION .*', r'#define HOPSANRELEASEVERSION "{}"'.format(fullversion))
     
     # Set splash screen version and revision number
     replace_pattern(r'HopsanGUI/graphics/tempdummysplash.svg', r'0\.0\.0', versionnumber)
@@ -628,8 +638,8 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
     callDel(r'HopsanGUI\graphics\tempdummysplash.svg')
 
     # Make sure we compile defaultLibrary into core
-    replace_pattern('Common.prf', r'.*?DEFINES \*= BUILTINDEFAULTCOMPONENTLIB', r'DEFINES *= BUILTINDEFAULTCOMPONENTLIB')
-    replace_pattern(r'HopsanCore/HopsanCore.pro', r'#INTERNALCOMPLIB.CC#', r'../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\')
+    replace_pattern('Common.prf', r'.*?DEFINES \*= HOPSAN_INTERNALDEFAULTCOMPONENTS', r'DEFINES *= HOPSAN_INTERNALDEFAULTCOMPONENTS')
+    replace_pattern(r'HopsanCore/HopsanCore.pro', r'#INTERNALCOMPLIB.CPP#', r'../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cpp \\')
     prepend_append_line_with_pattern('componentLibraries/defaultLibrary/defaultComponentLibrary.xml', '<lib.*?>', '<!-- The lib element is removed here since the default library code is built into the Hopsan Core -->\n<!--', '  -->')
     replace_pattern('componentLibraries/componentLibraries.pro', 'defaultLibrary', '')
     replace_pattern('componentLibraries/componentLibraries.pro', 'devLibraries', '')
@@ -637,8 +647,8 @@ def prepareSourceCode(versionnumber, revisionnumber, dodevrelease):
 
 def buildRelease():
 
-    # Make sure we undefine MAINCORE, so that MSVC dlls do not try to access the log file
-    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?DEFINES \*= MAINCORE', r'#DEFINES *= MAINCORE')
+    # Make sure we undefine HOPSANCORE_WRITELOG, so that MSVC dlls do not try to access the log file
+    replace_pattern('HopsanCore/HopsanCore.pro', r'.*?DEFINES \*= HOPSANCORE_WRITELOG', r'#DEFINES *= HOPSANCORE_WRITELOG')
 
     # ========================================================
     #  Build HOPSANCORE with MSVC, else remove those folders
@@ -661,8 +671,8 @@ def buildRelease():
         callRd(hopsanBinDir+makeMSVCOutDirName("2010", "x86"))
         callRd(hopsanBinDir+makeMSVCOutDirName("2010", "x64"))
     
-    # Make sure the MinGW compilation uses the MAINCORE define, so that log file is enabled
-    replace_pattern('HopsanCore/HopsanCore.pro',r'.*?DEFINES \*= MAINCORE', 'DEFINES *= MAINCORE')
+    # Make sure the MinGW compilation uses the HOPSANCORE_WRITELOG define, so that log file is enabled
+    replace_pattern('HopsanCore/HopsanCore.pro',r'.*?DEFINES \*= HOPSANCORE_WRITELOG', 'DEFINES *= HOPSANCORE_WRITELOG')
      
     # ========================================================
     #  BUILD WITH MINGW32
@@ -670,9 +680,9 @@ def buildRelease():
     print "Compiling with MinGW"
 
     # Remove previous files
-    #callDel(hopsanDir+r'\bin\HopsanCore*.*')
-    #callDel(hopsanDir+r'\bin\HopsanGUI*.*')
-    #callDel(hopsanDir+r'\bin\HopsanCLI*.*')
+    #callDel(hopsanDir+r'\bin\hopsancore*.*')
+    #callDel(hopsanDir+r'\bin\hopsangui*.*')
+    #callDel(hopsanDir+r'\bin\hopsancli*.*')
 
     # Create clean build directory
     hopsanBuildDir = hopsanDir+r'\HopsanNG_bd'
@@ -694,7 +704,7 @@ def buildRelease():
     os.chdir(hopsanBuildDir)    
     os.system(r'..\compileWithMinGW.bat')
 
-    if not fileExists(hopsanDir+r'\bin\HopsanCore.dll') or not fileExists(hopsanDir+r'\bin\HopsanGUI.exe') or not fileExists(hopsanDir+r'\bin\HopsanCLI.exe'):
+    if not fileExists(hopsanDir+r'\bin\hopsancore.dll') or not fileExists(hopsanDir+r'\bin\hopsangui.exe') or not fileExists(hopsanDir+r'\bin\hopsancli.exe'):
         printError("Failed to build Hopsan with MinGW.")
         return False
   
@@ -1000,12 +1010,22 @@ if gDo64BitRelease:
 else:
     qtRuntimeBins = qtRuntimeBins32
     mingwBins = mingwBins32
+    mingwOptBins = mingwOptBins32
     gTemporaryBuildDir += r'\Hopsan-'+gReleaseFileVersionName+r'-win32'
 print("Using TempDir: "+gTemporaryBuildDir)
 
+qt_bins_ok = checkFilesExistInDir(qmakeDir, qtRuntimeBins)
+qt_plugins_ok = checkFilesExistInDir(qmakeDir+'/../plugins',qtPluginBins)
+mingw_bins_ok = checkFilesExistInDir(mingwDir, mingwBins)
+mingw_optbins_ok = checkFilesExistInDir(mingwDir+'/../opt/bin', mingwOptBins)
+deps_ok = checkFilesExistInDir(hopsanDir+'/Dependencies', dependencyFiles)
+
+success = success and qt_bins_ok and qt_plugins_ok and mingw_bins_ok and mingw_optbins_ok and deps_ok
+
 if not success:
     cleanUp()
-        
+    printError("Could not find all needed files.")
+
 if success:
     prepareSourceCode(gBaseVersion, gReleaseRevision, gDoDevRelease)
     if doBuild:
@@ -1013,9 +1033,9 @@ if success:
             success = False
             cleanUp()
             printError("Compilation script failed in compilation error.")
-    
+
 if success:
-    #Copy depedency bin files to bin diirectory
+    #Copy dependency bin files to bin directory
     for f in qtRuntimeBins:
         copyFileToDir(qmakeDir, f, hopsanDir+'/bin')
     for f in qtPluginBins:

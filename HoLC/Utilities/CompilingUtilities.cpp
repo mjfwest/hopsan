@@ -75,7 +75,7 @@ QStringList compileComponentLibrary(const QString &compilerPath, const QString &
 //! @brief Calls GCC or MinGW compiler with specified parameters
 //! @param path Absolute path where compiler shall be run
 //! @param o Objective file name (without file extension)
-//! @param c List with source files, example: "file1.cpp file2.cc"
+//! @param c List with source files, example: "file1.cpp file2.cpp"
 //! @param i Include command, example: "-Ipath1 -Ipath2"
 //! @param l Link command, example: "-Lpath1 -lfile1 -lfile2"
 //! @param flags Compiler flags
@@ -169,6 +169,9 @@ bool compile(const QString &compilerPath, const QString &path, const QString &o,
         output.append("Compilation failed.");
         return false;
     }
+#else
+    output.append("OS not supported yet, Compilation failed.");
+    return false;
 #endif
 
     output.append("Compilation successful.");
